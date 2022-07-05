@@ -41,6 +41,6 @@ function createBEM(name) {
 
 export function createNamespace(name, prefix='h'){
     const prefixName = `${prefix}-${name}`
-    return createBEM(prefixName)
+    return [prefixName, createBEM(prefixName)]
 }
   

@@ -12,7 +12,7 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import { createNamespace } from './utils/create.js'
-const bem = createNamespace('app','hx')
+const [ _, bem ] = createNamespace('app','hx')
 </script>
 <style lang="less">
 html,

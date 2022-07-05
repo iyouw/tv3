@@ -1,10 +1,11 @@
 import { defineComponent } from 'vue'
 import { createNamespace } from '../utils/create.js'
 
-const bem = createNamespace('panel')
+const [ name, bem ] = createNamespace('panel')
 
 export default defineComponent({
-    setup(props, { slots }){
+    name,
+    setup(_, { slots }){
         return ()=>(
             <div class={bem()}>
                 <div class={bem('header')}>
