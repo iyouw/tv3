@@ -35,5 +35,4 @@ export class FileType {
       this.key = key
       this.value = value
     }
-  }
-  
+}

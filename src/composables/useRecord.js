@@ -64,9 +64,14 @@ export function useRecord(listApi,removeApi){
         await getListAsync()
     }
 
+    const queryAsync = async () => {
+        pageIndex.value = 1
+        await getListAsync()
+    }
+
     onMounted(async ()=>{
-        // await getListAsync()
+        await getListAsync()
     })
 
-    return { fileTypes, fileName, fileType, range, list, selected, pageIndex, pageSize, resetQuery, removeRecordAsync, getNextPageAsync }
+    return { fileTypes, fileName, fileType, range, list, selected, pageIndex, pageSize, resetQuery, queryAsync, removeRecordAsync, getNextPageAsync }
 }

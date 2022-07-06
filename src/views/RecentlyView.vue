@@ -5,13 +5,13 @@
                 <a-input class="w-224" placeholder="请输入" v-model:value="fileName"/>
             </h-from-item>
             <h-from-item label="文件类型:">
-                <a-select class="w-224" placeholder="请选择" :options="fileTypes" v-model:value="fileType"/>
+                <a-select mode="multiple" :max-tag-count="2" class="w-224" placeholder="请选择" :options="fileTypes" v-model:value="fileType"/>
             </h-from-item>
             <h-from-item label="浏览时间:" >
                 <a-range-picker class="w-260" show-time :placeholder="rangePlaceholder" v-model:value="range"/>
             </h-from-item>
             <a-button class="m-l-32" @click="resetQuery">重置</a-button>
-            <a-button type="primary" class="m-l-12" @click="">查询</a-button>
+            <a-button type="primary" class="m-l-12" @click="queryAsync">查询</a-button>
         </template>
         <h-table :columns="fixedColumns" :data="fixedData" @load="onLoad">
             <template #footer>
@@ -37,7 +37,7 @@ import { getRecentlyViewFileListAsync, removeRecentlyViewFileAsync } from '../ap
 
 const rangePlaceholder = ['开始日期','结束日期']
 
-const { fileTypes, fileName, fileType, range, list, selected, resetQuery, removeRecordAsync, getNextPageAsync } = useRecord(getRecentlyViewFileListAsync, removeRecentlyViewFileAsync)
+const { fileTypes, fileName, fileType, range, list, selected, resetQuery, queryAsync, removeRecordAsync, getNextPageAsync } = useRecord(getRecentlyViewFileListAsync, removeRecentlyViewFileAsync)
 
 const fixedColumns = ref([{
     title: 'Name',
