@@ -16,7 +16,7 @@ export default defineComponent({
     setup(props, { slots }){
         return ()=>(
             <div class={bem()}>
-                <lable class={bem('label')}>{ props.label }</lable>
+                <label class={bem('label')}>{ props.label }</label>
                 {slots.default?.()}
             </div>
         )

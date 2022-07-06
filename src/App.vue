@@ -29,6 +29,7 @@ body{
   display: flex;
   flex-direction: column;
   background-color: #F7F7F9;
+  padding-bottom: 20px;
 
   .hx-app-header{
     height: 65px;
