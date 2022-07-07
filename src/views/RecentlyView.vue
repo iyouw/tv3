@@ -33,7 +33,7 @@
                     <div class="selection">
                         <a-checkbox :checked="isSelected(v)" @click="()=>toggleSpec(v)"></a-checkbox>
                     </div>
-                    <div class="table-body-row-cell f-1">{{v.name}}</div>
+                    <div class="table-body-row-cell f-1 field">{{v.name}}</div>
                     <div class="table-body-row-cell f-1">{{FileType.GetName(v.type)}}</div>
                     <div class="table-body-row-cell f-1">{{v.path}}</div>
                     <div class="table-body-row-cell f-1">{{v.addTime}}</div>
@@ -55,8 +55,8 @@
                     <span class="m-l-5 m-r-5">{{selected.length}}</span>
                     <span>项</span>
                 </span>
-                <span class="action m-l-16" @click="removeRecordAsync">移除记录</span>
-                <span class="action m-l-16" @click="cancelSelected">取消选择</span>
+                <span class="action action--bold m-l-16" @click="removeRecordAsync">移除记录</span>
+                <span class="action action--bold m-l-16" @click="cancelSelected">取消选择</span>
             </div>
         </div>
     </h-panel>
@@ -95,16 +95,6 @@ const {
     isSelected,
     cancelSelected 
 } = useRecord(getRecentlyViewFileListAsync, removeRecentlyViewFileAsync)
-
-for (let i = 0; i < 20; i += 1) {
-    list.value.push({
-        resId: i,
-        name: `新闻联播${i}.mp4`,
-        type: 1,
-        path: '个人资产 > 我的文件 > 文件夹1',
-        addTime:'2022-06-12 10:33:15'
-    });
-}
 
 onMounted(()=>{
     const width = tableBody.value.offsetWidth - tableBody.value.clientWidth
@@ -153,6 +143,15 @@ onMounted(()=>{
     flex:1
 }
 
+.field{
+    cursor: pointer;
+    user-select: none;
+    
+    &:hover{
+        color: @primary-color;
+    }
+}
+
 .board-group{
     width: 100px;
     border-right: 1px solid rgba(0,0,0,0.06);
@@ -161,6 +160,11 @@ onMounted(()=>{
 .action{
     cursor: pointer;
     user-select: none;
+    color: @primary-color;
+
+    &--bolder{
+        font-weight: bold;
+    }
 
     &--warning{
         color: #E4244E;

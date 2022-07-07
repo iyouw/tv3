@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const transport  = axios.create({
-    baseURL:'',
+    baseURL:'api',
     withCredentials: true,
     timeout: 1 * 1000 * 60 * 5 
 })
@@ -9,12 +9,12 @@ const transport  = axios.create({
 transport.interceptors.response.use(res=>{
     const data = res.data
     if(data.code != 200){
-        Promise.reject(data.message)
+        throw new Error(data.message)
     }
     return data.data
 },
 err=>{
-    Promise.reject(err)
+    throw err
 })
 
 export default transport

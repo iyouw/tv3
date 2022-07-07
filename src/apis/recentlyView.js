@@ -1,4 +1,4 @@
-import transport from './transport.js'
+import request from './transport.js'
 
 /**
  * get recently view file list with name, type and updatetime range filters
@@ -18,19 +18,21 @@ export function getRecentlyViewFileListAsync(
   updateEndTime,
 ) {
   const url = 'browse/page';
-  const method = 'GET';
-  const params = {
+  const method = 'POST';
+  const data = {
     page,
     pageSize,
     name,
     type,
-    updateStartTime,
-    updateEndTime,
+    updateTime: {
+      start: updateStartTime,
+      end: updateEndTime,
+    },
   };
-  return transport({
+  return request({
     url,
     method,
-    params,
+    data,
   });
 }
 
@@ -44,7 +46,7 @@ export function removeRecentlyViewFileAsync(resourceIds) {
   const data = {
     resIds: resourceIds,
   };
-  return transport({
+  return request({
     url,
     method,
     data,

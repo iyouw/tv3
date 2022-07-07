@@ -26,12 +26,6 @@ export function useRecord(listApi,removeApi){
 
     const indeterminate = computed(()=>selected.value.length && selected.value.length < list.value.length)
 
-    const resetQuery = ()=>{
-        fileName.value = null
-        fileType.value = []
-        range.value = null
-    }
-
     const getListAsync = async ()=>{
         if(!listApi){
             return
@@ -42,29 +36,11 @@ export function useRecord(listApi,removeApi){
         const type = fileType.value
         const updateStartTime = range.value?.[0].format(timeFormat)
         const updateEndTime = range.value?.[1].format(timeFormat)
-        list.value = await listApi(page,size,name,type,updateStartTime,updateEndTime)
+        const data = await listApi(page,size,name,type,updateStartTime,updateEndTime)
+        list.value = data
     }
     
     const getNextPageAsync = async ()=>{
-        if(loading.value){
-            return
-        }
-        loading.value = true
-        setTimeout(()=>{
-            const len = list.value.length
-            for(let i = 0; i< 30;i++){
-                list.value.push({
-                    resId: len+i,
-                    name: `新闻联播${len + i}.mp4`,
-                    type: 3,
-                    path: '个人资产 > 我的文件 > 文件夹1',
-                    addTime:'2022-06-12 10:33:15'
-                })
-            }
-            loading.value = false
-        }, 2000)
-        return
-
         if(!listApi){
             return
         }
@@ -76,10 +52,10 @@ export function useRecord(listApi,removeApi){
         const page = ++pageIndex.value
         const size = pageSize.value
         const type = fileType.value
-        const updateStartTime = range?.value[0]?.format(timeFormat)
-        const updateEndTime = range?.value[1]?.format(timeFormat)
+        const updateStartTime = range.value?.[0].format(timeFormat)
+        const updateEndTime = range.value?.[1].format(timeFormat)
         const data = await listApi(page,size,name,type,updateStartTime,updateEndTime)
-        list.value = list.value.concat(data) 
+        list.value = list.value?.concat(data) 
 
         loading.value = false
     }
@@ -105,8 +81,17 @@ export function useRecord(listApi,removeApi){
     }
 
     const queryAsync = async () => {
+        if(!fileName.value && !fileType.value.length && !range.value){
+            return;
+        }
         pageIndex.value = 1
         await getListAsync()
+    }
+
+    const resetQuery = ()=>{
+        fileName.value = null
+        fileType.value = []
+        range.value = null
     }
 
     const selectAll = () => {
@@ -139,7 +124,7 @@ export function useRecord(listApi,removeApi){
     }
 
     onMounted(async ()=>{
-        // await getListAsync()
+        await getListAsync()
     })
 
     watchEffect(()=>{

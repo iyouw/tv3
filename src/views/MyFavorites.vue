@@ -33,7 +33,7 @@
                     <div class="selection">
                         <a-checkbox :checked="isSelected(v)" @click="()=>toggleSpec(v)"></a-checkbox>
                     </div>
-                    <div class="table-body-row-cell f-1">{{v.name}}</div>
+                    <div class="table-body-row-cell f-1 field">{{v.name}}</div>
                     <div class="table-body-row-cell f-1">{{FileType.GetName(v.type)}}</div>
                     <div class="table-body-row-cell f-1">{{v.path}}</div>
                     <div class="table-body-row-cell f-1">{{v.addTime}}</div>
@@ -68,7 +68,7 @@ import HPanel from '../components/Panel/Index.vue'
 import HFromItem from '../components/FormItem/Index.vue'
 import { FileType } from '../enums/fileType'
 import { useRecord } from '../composables/useRecord.js'
-import { getRecentlyViewFileListAsync, removeRecentlyViewFileAsync } from '../apis/recentlyView.js'
+import { getMyFavoriteFileListAsync, removeMyFavoriteFileAsync } from '../apis/myFavorites.js'
 
 const rangePlaceholder = ['开始日期','结束日期']
 
@@ -94,7 +94,7 @@ const {
     toggleSpec,
     isSelected,
     cancelSelected 
-} = useRecord(getRecentlyViewFileListAsync, removeRecentlyViewFileAsync)
+} = useRecord(getMyFavoriteFileListAsync, removeMyFavoriteFileAsync)
 
 for (let i = 0; i < 20; i += 1) {
     list.value.push({
@@ -150,6 +150,15 @@ onMounted(()=>{
 
 .f-1{
     flex:1
+}
+
+.field{
+    cursor: pointer;
+    user-select: none;
+
+    &:hover{
+        color: @primary-color;
+    }
 }
 
 .board-group{

@@ -33,13 +33,13 @@
                     <div class="selection">
                         <a-checkbox :checked="isSelected(v)" @click="()=>toggleSpec(v)"></a-checkbox>
                     </div>
-                    <div class="table-body-row-cell f-1">{{v.name}}</div>
+                    <div class="table-body-row-cell f-1 field">{{v.name}}</div>
                     <div class="table-body-row-cell f-1">{{FileType.GetName(v.type)}}</div>
                     <div class="table-body-row-cell f-1">{{v.size || '-'}}</div>
                     <div class="table-body-row-cell f-1">{{v.addTime}}</div>
                     <div class="table-body-row-cell f-1">
                         <span class="action m-r-16" @click="()=>removeSpecRecordAsync(v)">还原</span>
-                        <span class="action action--warning">彻底删除</span>
+                        <span class="action action--warning" @click="()=>onCleanSpecAsync(v)">彻底删除</span>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@ import HPanel from '../components/Panel/Index.vue'
 import HFromItem from '../components/FormItem/Index.vue'
 import { FileType } from '../enums/fileType'
 import { useRecord } from '../composables/useRecord.js'
-import { getRecentlyViewFileListAsync, removeRecentlyViewFileAsync } from '../apis/recentlyView.js'
+import { getTrashFileListAsync, recoverTrashFileAsync, removeTrashFileAsync } from '../apis/trash.js'
 
 const rangePlaceholder = ['开始日期','结束日期']
 
@@ -89,7 +89,7 @@ const {
     toggleSpec,
     isSelected,
     cancelSelected 
-} = useRecord(getRecentlyViewFileListAsync, removeRecentlyViewFileAsync)
+} = useRecord(getTrashFileListAsync, recoverTrashFileAsync)
 
 for (let i = 0; i < 20; i += 1) {
     list.value.push({
@@ -101,14 +101,21 @@ for (let i = 0; i < 20; i += 1) {
     });
 }
 
-const onCleanSpecAsync = spec => {
-
-}
+const onCleanSpecAsync = async spec => {
+  const index = list.value.findIndex(x => x.resId === spec.resId);
+  if (index === -1) {
+    return;
+  }
+  await removeTrashFileAsync([spec.resId]);
+  list.splice(index, 1);
+};
 
 const onCleanAsync = async () => {
-    const resIds = selected.value.map(x=>x.resId)
-    await removeRecordAsync(resIds)
-}
+  const resIds = selected.value.map(x => x.resId);
+  await removeTrashFileAsync(resIds);
+  list.value = list.value.filter(x => !selected.value.some(o => o.resId === x.resId));
+  selected.value = [];
+};
 
 onMounted(()=>{
     const width = tableBody.value.offsetWidth - tableBody.value.clientWidth
@@ -153,8 +160,13 @@ onMounted(()=>{
     flex:1
 }
 
-.c-p{
+.field{
     cursor: pointer;
+    user-select: none;
+
+    &:hover{
+        color: @primary-color;
+    }
 }
 
 .board-group{
