@@ -64,8 +64,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { DownOutlined } from '@ant-design/icons-vue'
-import HPanel from '../components/Panel/Index.vue'
-import HFromItem from '../components/FormItem/Index.vue'
+import HPanel from '../components/Panel/HPanel.vue'
+import HFromItem from '../components/FormItem/HFromItem.vue'
 import { FileType } from '../enums/fileType'
 import { useRecord } from '../composables/useRecord.js'
 import { getRecentlyViewFileListAsync, removeRecentlyViewFileAsync } from '../apis/recentlyView.js'

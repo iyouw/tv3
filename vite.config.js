@@ -39,7 +39,11 @@ export default defineConfig({
             path: path.resolve('src/theme/default.less'),
           }
         ],
-        defaultScopeName: 'cyan',
+        includeStyleWithColors: [
+          {
+            color: "#ffffff"
+          },
+        ],
         extract: false
       },
     })
