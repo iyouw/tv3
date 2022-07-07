@@ -47,17 +47,19 @@ export function useRecord(listApi,removeApi){
         if(loading.value){
             return
         }
-        loading.value = true
+        try {
+            loading.value = true
 
-        const page = ++pageIndex.value
-        const size = pageSize.value
-        const type = fileType.value
-        const updateStartTime = range.value?.[0].format(timeFormat)
-        const updateEndTime = range.value?.[1].format(timeFormat)
-        const data = await listApi(page,size,name,type,updateStartTime,updateEndTime)
-        list.value = list.value?.concat(data) 
-
-        loading.value = false
+            const page = ++pageIndex.value
+            const size = pageSize.value
+            const type = fileType.value
+            const updateStartTime = range.value?.[0].format(timeFormat)
+            const updateEndTime = range.value?.[1].format(timeFormat)
+            const data = await listApi(page,size,name,type,updateStartTime,updateEndTime)
+            list.value = list.value?.concat(data)
+        } finally {
+            loading.value = false
+        }
     }
 
     const removeRecordAsync = async ()=>{
