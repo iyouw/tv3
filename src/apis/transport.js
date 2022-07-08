@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 const transport  = axios.create({
-    baseURL:'api',
-    withCredentials: true,
+    baseURL:'http://localhost:7070/api',
+    withCredentials: false,
     timeout: 1 * 1000 * 60 * 5 
 })
 
