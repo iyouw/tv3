@@ -1,0 +1,273 @@
+<template>
+    <h-panel>
+        <template #header>
+            <h-from-item label="文件名称:">
+                <a-input class="w-224" placeholder="请输入" v-model:value="fileName"/>
+            </h-from-item>
+            <h-from-item label="文件类型:">
+                <a-select mode="multiple" :max-tag-count="2" class="w-224" placeholder="请选择" :options="fileTypes" v-model:value="fileType"/>
+            </h-from-item>
+            <h-from-item label="浏览时间:" >
+                <a-range-picker class="w-260" show-time :placeholder="rangePlaceholder" v-model:value="range"/>
+            </h-from-item>
+            <a-button class="m-l-32" @click="resetQuery">重置</a-button>
+            <a-button type="primary" class="m-l-12" @click="queryAsync">查询</a-button>
+        </template>
+        <div class="table">
+            <div class="table-spinner" v-show="loading">
+                <a-spin size="large" />
+            </div>
+            <div class="table-body" ref="tableBody"  v-infinite-scroll="getNextPageAsync" :infinite-scroll-disabled="loading" infinite-scroll-distance="20">
+                <table class="table-body-table">
+                    <thead class="table-body-table-header">
+                        <tr>
+                            <th class="selection">
+                                <a-checkbox v-model:checked="selectedAllFlag" @change="toggleSelectAll" :indeterminate="indeterminate"></a-checkbox>
+                            </th>
+                            <th class="">文件名</th>
+                            <th class="">文件类型</th>
+                            <th class="">文件位置</th>
+                            <th class="">浏览时间</th>
+                            <th class="">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body-table-body">
+                        <tr class="table-body-table-body-row" :class="{'table-body-table-body-row--selected':isSelected(v)}" v-for="(v,i) in list" :key="i">
+                            <td class="selection">
+                                <a-checkbox :checked="isSelected(v)" @click="()=>toggleSpec(v)"></a-checkbox>
+                            </td>
+                            <td class="field">{{v.name}}</td>
+                            <td class="">{{FileType.GetName(v.type)}}</td>
+                            <td class="">{{v.path}}</td>
+                            <td class="">{{v.addTime}}</td>
+                            <td class="">
+                                <span class="action m-r-16" @click="()=>removeSpecRecordAsync(v)">移除记录</span>
+                                <a-dropdown>
+                                    <a class="ant-dropdown-link" @click.prevent>
+                                        更多
+                                        <DownOutlined />
+                                    </a>
+                                </a-dropdown>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <a-checkbox v-model:checked="selectedAllFlag" @change="toggleSelectAll" :indeterminate="indeterminate" class="m-r-8" />
+                <span class="board-group">
+                    <span>已选择</span>
+                    <span class="counter m-l-5 m-r-5">{{selected.length}}</span>
+                    <span>项</span>
+                </span>
+                <span class="action action--bold m-l-16" @click="removeRecordAsync">移除记录</span>
+                <span class="action action--bold m-l-16" @click="cancelSelected">取消选择</span>
+            </div>
+        </div>
+    </h-panel>
+</template>
+<script setup>
+import { ref, onMounted } from 'vue'
+import { DownOutlined } from '@ant-design/icons-vue'
+import HPanel from '../components/Panel/HPanel.vue'
+import HFromItem from '../components/FormItem/HFromItem.vue'
+import { FileType } from '../enums/fileType'
+import { useRecord } from '../composables/useRecord.js'
+import { getRecentlyViewFileListAsync, removeRecentlyViewFileAsync } from '../apis/recentlyView.js'
+
+const rangePlaceholder = ['开始日期','结束日期']
+
+const style = ref({})
+const tableBody = ref()
+
+const { 
+    fileTypes, 
+    fileName, 
+    fileType, 
+    range, 
+    list, 
+    selected,
+    indeterminate, 
+    loading, 
+    resetQuery, 
+    queryAsync, 
+    removeRecordAsync,
+    removeSpecRecordAsync, 
+    getNextPageAsync,
+    selectedAllFlag, 
+    toggleSelectAll, 
+    toggleSpec,
+    isSelected,
+    cancelSelected 
+} = useRecord(getRecentlyViewFileListAsync, removeRecentlyViewFileAsync)
+
+onMounted(()=>{
+    const width = tableBody.value.offsetWidth - tableBody.value.clientWidth
+    style.value.width = `${width}px`
+})
+
+</script>
+<style lang="less">
+.w-224{
+    width: 224px;
+}
+
+.w-260{
+    width: 260px;
+}
+
+.m-l-32{
+    margin-left: 32px;
+}
+
+.m-l-12{
+    margin-left: 12px;
+}
+
+.m-l-5{
+    margin-left: 5px;
+}
+
+.m-l-16{
+    margin-left: 16px;
+}
+
+.m-r-5{
+    margin-right: 5px;
+}
+
+.m-r-8{
+    margin-right: 8px;
+}
+
+.m-r-16{
+    margin-right: 16px;
+}
+
+.f-1{
+    flex:1
+}
+
+.field{
+    cursor: pointer;
+    user-select: none;
+    
+    &:hover{
+        color: @primary-color;
+    }
+}
+
+.board-group{
+    width: 100px;
+    border-right: 1px solid rgba(0,0,0,0.06);
+
+    .counter{
+        color: @primary-color;
+    }
+}
+
+.action{
+    cursor: pointer;
+    user-select: none;
+    color: @primary-color;
+
+    &--bolder{
+        font-weight: bold;
+    }
+
+    &--warning{
+        color: #E4244E;
+    }
+}
+
+
+.table{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    background-color: rgba(255,255,255,1);
+
+    box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.1000);    
+    border-radius: 8px;
+    overflow: hidden;
+
+    .selection{
+        padding-left: 24px;
+        padding-right: 16px;
+    }
+
+    &-spinner{
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255,255,255,0.5);
+    }
+
+    &-body{
+        flex: 1;
+        overflow-y: auto;
+        background-color:rgba(255,255,255, 1);
+
+        &-table{
+            width: 100%;
+            font-size: 14px;
+
+            &-header{
+                th{
+                    position: sticky;
+                    top: 0;
+                    z-index: 1036;
+                    height: 54px;
+                    font-weight: bolder;
+                    padding-left: 16px;
+                    padding-right: 16px;
+                    text-align: left;
+                    background-color: rgba(241,241,241,1);
+                }
+            }
+
+            &-body{
+                &-row{
+                    height: 64px;
+
+                    border-bottom: 1px solid rgba(0,0,0,0.06);
+
+                    &:last-child{
+                        border-bottom: none;
+                    }
+
+                    &--selected,
+                    &:hover{
+                        background-color: rgba(0,0,0,0.0200);
+                    }
+
+                    td{
+                        padding-left: 16px;
+                        padding-right: 16px;
+                    }
+                }
+            }
+        }
+    }
+
+    &-footer{
+        height: 56px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-left: 24px;
+        padding-right: 24px;
+
+        border-top: 1px solid rgba(0,0,0,0.06);
+    }
+}
+</style>
