@@ -52,7 +52,7 @@
                 <a-checkbox v-model:checked="selectedAllFlag" @change="toggleSelectAll" :indeterminate="indeterminate" class="m-r-8" />
                 <span class="board-group">
                     <span>已选择</span>
-                    <span class="m-l-5 m-r-5">{{selected.length}}</span>
+                    <span class="counter m-l-5 m-r-5">{{selected.length}}</span>
                     <span>项</span>
                 </span>
                 <span class="action action--bold m-l-16" @click="removeRecordAsync">移除记录</span>
@@ -155,6 +155,10 @@ onMounted(()=>{
 .board-group{
     width: 100px;
     border-right: 1px solid rgba(0,0,0,0.06);
+
+    .counter{
+        color: @primary-color;
+    }
 }
 
 .action{
@@ -170,6 +174,7 @@ onMounted(()=>{
         color: #E4244E;
     }
 }
+
 
 .table{
     position: relative;

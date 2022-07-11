@@ -17,36 +17,41 @@
             <div class="table-spinner" v-show="loading">
                 <a-spin size="large" />
             </div>
-            <div class="table-header">
-                <div class="selection">
-                    <a-checkbox v-model:checked="selectedAllFlag" @change="toggleSelectAll" :indeterminate="indeterminate"></a-checkbox>
-                </div>
-                <div class="table-header-cell f-1">文件名</div>
-                <div class="table-header-cell f-1">文件类型</div>
-                <div class="table-header-cell f-1">文件位置</div>
-                <div class="table-header-cell f-1">收藏时间</div>
-                <div class="table-header-cell f-1">操作</div>
-                <div :style="style"></div>
-            </div>
             <div class="table-body" ref="tableBody"  v-infinite-scroll="getNextPageAsync" :infinite-scroll-disabled="loading" infinite-scroll-distance="20">
-                <div class="table-body-row" :class="{'table-body-row--selected':isSelected(v)}" v-for="(v,i) in list" :key="i">
-                    <div class="selection">
-                        <a-checkbox :checked="isSelected(v)" @click="()=>toggleSpec(v)"></a-checkbox>
-                    </div>
-                    <div class="table-body-row-cell f-1 field">{{v.name}}</div>
-                    <div class="table-body-row-cell f-1">{{FileType.GetName(v.type)}}</div>
-                    <div class="table-body-row-cell f-1">{{v.path}}</div>
-                    <div class="table-body-row-cell f-1">{{v.addTime}}</div>
-                    <div class="table-body-row-cell f-1">
-                        <span class="action m-r-16" @click="()=>removeSpecRecordAsync(v)">取消收藏</span>
-                        <a-dropdown>
-                            <a class="ant-dropdown-link" @click.prevent>
-                                更多
-                                <DownOutlined />
-                            </a>
-                        </a-dropdown>
-                    </div>
-                </div>
+                <table class="table-body-table">
+                    <thead class="table-body-table-header">
+                        <tr>
+                            <th class="selection">
+                                <a-checkbox v-model:checked="selectedAllFlag" @change="toggleSelectAll" :indeterminate="indeterminate"></a-checkbox>
+                            </th>
+                            <th class="">文件名</th>
+                            <th class="">文件类型</th>
+                            <th class="">文件位置</th>
+                            <th class="">浏览时间</th>
+                            <th class="">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body-table-body">
+                        <tr class="table-body-table-body-row" :class="{'table-body-table-body-row--selected':isSelected(v)}" v-for="(v,i) in list" :key="i">
+                            <td class="selection">
+                                <a-checkbox :checked="isSelected(v)" @click="()=>toggleSpec(v)"></a-checkbox>
+                            </td>
+                            <td class="field">{{v.name}}</td>
+                            <td class="">{{FileType.GetName(v.type)}}</td>
+                            <td class="">{{v.path}}</td>
+                            <td class="">{{v.addTime}}</td>
+                            <td class="">
+                                <span class="action m-r-16" @click="()=>removeSpecRecordAsync(v)">移除记录</span>
+                                <a-dropdown>
+                                    <a class="ant-dropdown-link" @click.prevent>
+                                        更多
+                                        <DownOutlined />
+                                    </a>
+                                </a-dropdown>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <div class="table-footer">
                 <a-checkbox v-model:checked="selectedAllFlag" @change="toggleSelectAll" :indeterminate="indeterminate" class="m-r-8" />
@@ -55,8 +60,8 @@
                     <span class="counter m-l-5 m-r-5">{{selected.length}}</span>
                     <span>项</span>
                 </span>
-                <span class="action m-l-16" @click="removeRecordAsync">取消收藏</span>
-                <span class="action m-l-16" @click="cancelSelected">取消选择</span>
+                <span class="action action--bold m-l-16" @click="removeRecordAsync">移除记录</span>
+                <span class="action action--bold m-l-16" @click="cancelSelected">取消选择</span>
             </div>
         </div>
     </h-panel>
@@ -68,7 +73,7 @@ import HPanel from '../components/Panel/HPanel.vue'
 import HFromItem from '../components/FormItem/HFromItem.vue'
 import { FileType } from '../enums/fileType'
 import { useRecord } from '../composables/useRecord.js'
-import { getMyFavoriteFileListAsync, removeMyFavoriteFileAsync } from '../apis/myFavorites.js'
+import { getRecentlyViewFileListAsync, removeRecentlyViewFileAsync } from '../apis/recentlyView.js'
 
 const rangePlaceholder = ['开始日期','结束日期']
 
@@ -94,17 +99,7 @@ const {
     toggleSpec,
     isSelected,
     cancelSelected 
-} = useRecord(getMyFavoriteFileListAsync, removeMyFavoriteFileAsync)
-
-for (let i = 0; i < 20; i += 1) {
-    list.value.push({
-        resId: i,
-        name: `会议室设计图${i}.jpg`,
-        type: 2,
-        path: '个人资产 > 我的文件 > 文件夹1',
-        addTime:'2022-06-12 10:33:15'
-    });
-}
+} = useRecord(getRecentlyViewFileListAsync, removeRecentlyViewFileAsync)
 
 onMounted(()=>{
     const width = tableBody.value.offsetWidth - tableBody.value.clientWidth
@@ -125,15 +120,16 @@ onMounted(()=>{
     margin-left: 32px;
 }
 
-.m-l-16{
-    margin-left: 16px;
-}
-
 .m-l-12{
     margin-left: 12px;
 }
+
 .m-l-5{
     margin-left: 5px;
+}
+
+.m-l-16{
+    margin-left: 16px;
 }
 
 .m-r-5{
@@ -184,6 +180,7 @@ onMounted(()=>{
     }
 }
 
+
 .table{
     position: relative;
     width: 100%;
@@ -215,50 +212,49 @@ onMounted(()=>{
         background-color: rgba(255,255,255,0.5);
     }
 
-    &-header{
-        width: 100%;
-        height: 54px;
-        background-color: rgba(0,0,0,0.0200);
-        font-size: 14px;
-
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-
-        &-cell{
-            font-weight: bolder;
-            padding-left: 16px;
-            padding-right: 16px;
-        }
-    }
-
     &-body{
         flex: 1;
         overflow-y: auto;
         background-color:rgba(255,255,255, 1);
 
-        &-row{
+        &-table{
             width: 100%;
-            height:64px;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-
             font-size: 14px;
 
-            &:last-child{
-                border-bottom: none;
+            &-header{
+                th{
+                    position: sticky;
+                    top: 0;
+                    z-index: 1036;
+                    height: 54px;
+                    font-weight: bolder;
+                    padding-left: 16px;
+                    padding-right: 16px;
+                    text-align: left;
+                    background-color: rgba(241,241,241,1);
+                }
             }
 
-            &--selected,
-            &:hover{
-                background-color: rgba(0,0,0,0.0200);
-            }
+            &-body{
+                &-row{
+                    height: 64px;
 
-            &-cell{
-                padding-left: 16px;
-                padding-right: 16px;
+                    border-bottom: 1px solid rgba(0,0,0,0.06);
+
+                    &:last-child{
+                        border-bottom: none;
+                    }
+
+                    &--selected,
+                    &:hover{
+                        background-color: rgba(0,0,0,0.0200);
+                    }
+
+                    td{
+                        padding-left: 16px;
+                        padding-right: 16px;
+                    }
+                }
             }
         }
     }
